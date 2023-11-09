@@ -46,6 +46,8 @@ public:
     void report()
     {
         // video 6.
+        cout << book_id << " | " << b_name << " | " << a_name << " | " << endl;
+
     }
 
     string return_B_Name()
@@ -124,10 +126,10 @@ public:
         strcpy(stdbno, t);
     }
 
-    void report(char t[])
+    void report()
     {
         // video 7
-        // cout<<admin_no<<
+        cout << admin_no << " | " << Name << " | " << book_holding << " | " << endl;
     }
 };
 
@@ -352,6 +354,48 @@ void deleteBook()
     getchar();
 }
 
+void DispAllStd()
+{
+    clrscr();
+    fp.open("student.dat", ios::in);
+    if (!fp)
+    {
+        cout << "File not Open" << endl;
+        getchar();
+        return;
+    }
+    cout << "\n\n\tStudent list" << endl;
+    cout << "=======" << endl;
+    cout << "Admin no | "
+         << " Name | "
+         << " | Book no. | " << endl;
+    while (fp.read((char *)&st, sizeof(Student)))
+    {
+        st.report();
+    }
+}
+
+
+void DispAllBook()
+{
+    clrscr();
+    fp.open("book.dat", ios::in);
+    if (!fp)
+    {
+        cout << "File not Open" << endl;
+        getchar();
+        return;
+    }
+    cout << "\n\nBooks list" << endl;
+    cout << "=======" << endl;
+    cout << "Book ID | "
+         << " Name | "
+         << " | Author | " << endl;
+    while (fp.read((char *)&bk, sizeof(Book)))
+    {
+        bk.report();
+    }
+}
 
 void start()
 {
