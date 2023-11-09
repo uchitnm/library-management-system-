@@ -216,7 +216,7 @@ void modifyBook()
     cout << "\nModify Book Record." << endl;
     cout << "Enter the Book no. :";
     cin >> book_id;
-    fp.open("book.dat", ios::in || ios::out);
+    fp.open("book.dat", ios::in | ios::out);
     while (fp.read((char *)&bk, sizeof(Book)))
     {
         if (book_id == bk.return_BookID())
@@ -224,7 +224,7 @@ void modifyBook()
             bk.showBook();
             cout << "Enter the New detials" << endl;
             bk.modifyBook();
-            int pos = -1 * sizeof(bk);
+            int pos = -1 * (int)sizeof(bk);
             fp.seekp(pos, ios::cur);
             fp.write((char *)&bk, sizeof(Book));
             cout << "\nRecord Updated" << endl;
@@ -238,6 +238,120 @@ void modifyBook()
     }
     getchar();
 }
+
+void modifyStudent()
+{
+    int admin_no;
+    bool found = false;
+    clrscr();
+    cout << "\nModify Student Record." << endl;
+    cout << "Enter the Admin no. :";
+    cin >> admin_no;
+    fp.open("Student.dat", ios::in | ios::out);
+    while (fp.read((char *)&st, sizeof(Student)))
+    {
+        if (admin_no == st.return_adminNo())
+        {
+            st.showStudent();
+            cout << "Enter the New detials" << endl;
+            st.modifyStudent();
+            int pos = -1 * (int)sizeof(st);
+            fp.seekp(pos, ios::cur);
+            fp.write((char *)&st, sizeof(Student));
+            cout << "\nRecord Updated" << endl;
+            found = true;
+        }
+    }
+    fp.close();
+    if (!found)
+    {
+        cout << "No Student found" << endl;
+    }
+    getchar();
+}
+
+void deleteStudent()
+{
+
+    int admin_no;
+    bool flag = false;
+    clrscr();
+    cout << "\n\tDelete Student." << endl;
+    cout << "Enter thr Admin no." << endl;
+    cin >> admin_no;
+    fp.open("Student.dat", ios::in | ios::out);
+    fstream fp2;
+    fp2.open("temp.dat", ios::out);
+    fp.seekg(0, ios::beg);
+    while (fp.read((char *)&st, sizeof(Student)))
+    {
+        if (admin_no != st.return_adminNo())
+        {
+            fp2.write((char *)&st, sizeof(Student));
+        }
+        else
+        {
+
+            flag = true;
+        }
+    }
+    fp2.close();
+    fp.close();
+    remove("student.dat");
+    rename("temp.dat", "student.dat");
+    if (flag)
+    {
+        cout << "Record deleted" << endl;
+    }
+    else
+    {
+        cout << "Record not found." << endl;
+    }
+
+    getchar();
+}
+
+void deleteBook()
+{
+
+    int Book_ID;
+    bool flag = false;
+    clrscr();
+    cout << "\n\tDelete BOOK." << endl;
+    cout << "Enter thr Book ID." << endl;
+    cin >> Book_ID;
+    fp.open("Book.dat", ios::in | ios::out);
+    fstream fp2;
+    fp2.open("temp.dat", ios::out);
+    fp.seekg(0, ios::beg);
+    while (fp.read((char *)&bk, sizeof(Book)))
+    {
+        if (Book_ID != bk.return_BookID())
+        {
+            fp2.write((char *)&bk, sizeof(Book));
+        }
+        else
+        {
+
+            flag = true;
+        }
+    }
+    fp2.close();
+    fp.close();
+    remove("book.dat");
+    rename("temp.dat", "book.dat");
+    if (flag)
+    {
+        cout << "Record deleted" << endl;
+    }
+    else
+    {
+        cout << "Record not found." << endl;
+    }
+
+    getchar();
+}
+
 
 void start()
 {
