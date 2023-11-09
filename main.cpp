@@ -76,7 +76,7 @@ public:
         cout << "Profile Created." << endl;
     }
 
-    void showBook()
+    void showStudent()
     {
         cout << "Admin no.: " << admin_no << endl;
         cout << "Name : " << Name << endl;
@@ -165,6 +165,47 @@ void writeStudent()
     } while (ch == 'y' || ch != 'Y');
     fp.close();
 }
+
+void displayspb(int bookID)
+{
+    cout << "\nBook Details :" << endl;
+    int flag = 0;
+    fp.open("book.dat", ios::in);
+    while (fp.read((char *)&bk, sizeof(Book)))
+    {
+        if (bk.return_BookID() == bookID)
+        {
+
+            bk.showBook();
+            flag = 1;
+        }
+    }
+    fp.close();
+    if (!flag){
+        cout<<"Book Doesn't Exist."<<endl;
+    }
+}
+
+void displayspStd(int admin_no)
+{
+    cout << "Student Details :" << endl;
+    int flag = 0;
+    fp.open("student.dat", ios::in);
+    while (fp.read((char *)&st, sizeof(Student)))
+    {
+        if (st.return_adminNo() == admin_no)
+        {
+
+            st.showStudent();
+            flag = 1;
+        }
+    }
+    fp.close();
+    if (!flag){
+        cout<<"Student Doesn't Exist."<<endl;
+    }
+}
+
 
 void start()
 {
