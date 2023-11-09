@@ -119,15 +119,16 @@ public:
         book_holding = 0;
     }
 
-    void getStudentBOOKno(char t[]){
-        strcpy(stdbno,t);
+    void getStudentBOOKno(char t[])
+    {
+        strcpy(stdbno, t);
     }
 
-    void report(char t[]){
+    void report(char t[])
+    {
         // video 7
         // cout<<admin_no<<
     }
-
 };
 
 fstream fp, fp1;
@@ -135,10 +136,34 @@ fstream fp, fp1;
 Book bk;
 Student st;
 
-void WRITEBOOK()
+void writeBook()
 {
-    char ch;
-    fp.open("book.dat");
+    char ch = 'y';
+    fp.open("book.dat", ios::out | ios::app);
+    do
+    {
+        clrscr();
+        bk.create_book();
+        fp.write((char *)&bk, sizeof(Book));
+        cout << "\n Add more. (y/n)?" << endl;
+        cin >> ch;
+    } while (ch == 'y' || ch == 'Y');
+    fp.close();
+}
+
+void writeStudent()
+{
+    char ch = 'y';
+    fp.open("Student.dat", ios::out | ios::app);
+    do
+    {
+        clrscr();
+        st.create_std();
+        fp.write((char *)&st, sizeof(Student));
+        cout << "\n Add more. (y/n)?" << endl;
+        cin >> ch;
+    } while (ch == 'y' || ch != 'Y');
+    fp.close();
 }
 
 void start()
