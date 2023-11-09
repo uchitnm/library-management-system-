@@ -169,7 +169,7 @@ void writeStudent()
 void displayspb(int bookID)
 {
     cout << "\nBook Details :" << endl;
-    int flag = 0;
+    bool flag = 0;
     fp.open("book.dat", ios::in);
     while (fp.read((char *)&bk, sizeof(Book)))
     {
@@ -181,15 +181,16 @@ void displayspb(int bookID)
         }
     }
     fp.close();
-    if (!flag){
-        cout<<"Book Doesn't Exist."<<endl;
+    if (!flag)
+    {
+        cout << "Book Doesn't Exist." << endl;
     }
 }
 
 void displayspStd(int admin_no)
 {
     cout << "Student Details :" << endl;
-    int flag = 0;
+    bool flag = 0;
     fp.open("student.dat", ios::in);
     while (fp.read((char *)&st, sizeof(Student)))
     {
@@ -201,11 +202,42 @@ void displayspStd(int admin_no)
         }
     }
     fp.close();
-    if (!flag){
-        cout<<"Student Doesn't Exist."<<endl;
+    if (!flag)
+    {
+        cout << "Student Doesn't Exist." << endl;
     }
 }
 
+void modifyBook()
+{
+    int book_id;
+    bool found = false;
+    clrscr();
+    cout << "\nModify Book Record." << endl;
+    cout << "Enter the Book no. :";
+    cin >> book_id;
+    fp.open("book.dat", ios::in || ios::out);
+    while (fp.read((char *)&bk, sizeof(Book)))
+    {
+        if (book_id == bk.return_BookID())
+        {
+            bk.showBook();
+            cout << "Enter the New detials" << endl;
+            bk.modifyBook();
+            int pos = -1 * sizeof(bk);
+            fp.seekp(pos, ios::cur);
+            fp.write((char *)&bk, sizeof(Book));
+            cout << "\nRecord Updated" << endl;
+            found = true;
+        }
+    }
+    fp.close();
+    if (!found)
+    {
+        cout << "No Book found" << endl;
+    }
+    getchar();
+}
 
 void start()
 {
