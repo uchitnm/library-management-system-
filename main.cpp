@@ -1,6 +1,7 @@
 #include <iostream>
 #include <myconio_mac.h>
 #include <stdlib.h>
+#include <string.h>
 #include <fstream>
 using namespace std;
 
@@ -86,18 +87,45 @@ public:
         }
     }
 
-    void modifyStudent(){
-        cout<<"Enter the admin no." << admin_no << endl;
-        cout<<"Modify student name:";
-        getline(cin,Name);
+    void modifyStudent()
+    {
+        cout << "Enter the admin no." << admin_no << endl;
+        cout << "Modify student name:";
+        getline(cin, Name);
     }
 
-    int return_adminNo(){
+    int return_adminNo()
+    {
         return admin_no;
     }
 
-    char * return_studentBookno(){
+    char *return_studentBookno()
+    {
         return stdbno;
+    }
+
+    int return_book_holding()
+    {
+        return book_holding;
+    }
+
+    void add_book_holding()
+    {
+        book_holding = 1;
+    }
+
+    void reset_book_holding()
+    {
+        book_holding = 0;
+    }
+
+    void getStudentBOOKno(char t[]){
+        strcpy(stdbno,t);
+    }
+
+    void report(char t[]){
+        // video 7
+        // cout<<admin_no<<
     }
 
 };
