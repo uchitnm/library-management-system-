@@ -96,6 +96,9 @@ public:
         return admin_no;
     }
 
+    char * return_studentBookno(){
+        return stdbno;
+    }
 
 };
 
