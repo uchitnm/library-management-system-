@@ -47,7 +47,6 @@ public:
     {
         // video 6.
         cout << book_id << " | " << b_name << " | " << a_name << " | " << endl;
-
     }
 
     string return_B_Name()
@@ -60,7 +59,7 @@ class Student
 {
     int admin_no;
     string Name;
-    char stdbno[6];
+    int stdbno;
     int book_holding;
 
 public:
@@ -74,7 +73,7 @@ public:
         getline(cin, Name);
 
         book_holding = 0;
-        stdbno[0] = '\0';
+        stdbno = 0;
         cout << "Profile Created." << endl;
     }
 
@@ -101,7 +100,7 @@ public:
         return admin_no;
     }
 
-    char *return_studentBookno()
+    int return_studentBookno()
     {
         return stdbno;
     }
@@ -121,9 +120,9 @@ public:
         book_holding = 0;
     }
 
-    void getStudentBOOKno(char t[])
+    void getStudentBOOKno(int t)
     {
-        strcpy(stdbno, t);
+        stdbno = t;
     }
 
     void report()
@@ -373,8 +372,9 @@ void DispAllStd()
     {
         st.report();
     }
+    fp.close();
+    getchar();
 }
-
 
 void DispAllBook()
 {
@@ -395,6 +395,122 @@ void DispAllBook()
     {
         bk.report();
     }
+    fp.close();
+    getchar();
+}
+
+void bookissue()
+{
+
+    int student_adminNo;
+    int BookID;
+
+    bool found = false, flag = false;
+
+    clrscr();
+    cout << "\tBook Issue:-" << endl;
+    cout << "Enter Student admin no.:";
+    cin >> student_adminNo;
+    fp.open("student.dat", ios::in | ios ::out);
+    fp1.open("book.dat", ios::in | ios ::out);
+    while (fp.read((char *)&st, sizeof(Student)) && !found)
+    {
+        if (st.return_adminNo() == student_adminNo)
+        {
+            found = true;
+            if (st.return_book_holding() == 0)
+            {
+                cout << "Enter the Book ID: " << endl;
+                cin >> BookID;
+                while (fp1.read((char *)&bk, sizeof(Book)) && !flag)
+                {
+                    if (bk.return_BookID() == BookID)
+                    {
+                        flag = true;
+                        st.add_book_holding();
+                        st.getStudentBOOKno(bk.return_BookID());
+                        int pos = -1 * (int)sizeof(st);
+                        fp.seekg(pos, ios::cur);
+                        fp.write((char *)&st, sizeof(Student));
+                        cout << "Book issued." << endl;
+                        // Fine message.
+                    }
+                }
+                if (flag == 0)
+                {
+                    cout << "Book doesn't Exist." << endl;
+                }
+                else
+                {
+                    cout << "Return the previous Book" << endl;
+                }
+            }
+        }
+    }
+    if (found == 0)
+    {
+        cout << "No Student Found" << endl;
+    }
+    getchar();
+    fp.close();
+    fp1.close();
+}
+
+void bookDeposit()
+{
+
+    int student_adminNo;
+    int BookID;
+
+    bool found = false, flag = false;
+
+    clrscr();
+    cout << "\tBook Deposit :- " << endl;
+    cout << "Enter Student admin no.:";
+    cin >> student_adminNo;
+    fp.open("student.dat", ios::in | ios ::out);
+    fp1.open("book.dat", ios::in | ios ::out);
+    while (fp.read((char *)&st, sizeof(Student)) && !found)
+    {
+        if (st.return_adminNo() == student_adminNo)
+        {
+            found = true;
+            if (st.return_book_holding() == 1)
+            {
+                cout << "Enter the Book ID: " << endl;
+                cin >> BookID;
+                while (fp1.read((char *)&bk, sizeof(Book)) && !flag)
+                {
+                    if (bk.return_BookID() == st.return_studentBookno())
+                    {
+                        flag = true;
+                        bk.showBook();
+
+                        st.reset_book_holding();
+                        int pos = -1 * (int)sizeof(st);
+                        fp.seekg(pos, ios::cur);
+                        fp.write((char *)&st, sizeof(Student));
+                        cout << "Book Deposited." << endl;
+                    }
+                }
+                if (flag == 0)
+                {
+                    cout << "Book doesn't Exist." << endl;
+                }
+                else
+                {
+                    cout << "No book Issued." << endl;
+                }
+            }
+        }
+    }
+    if (found == 0)
+    {
+        cout << "No Student Found" << endl;
+    }
+    getchar();
+    fp.close();
+    fp1.close();
 }
 
 void start()
