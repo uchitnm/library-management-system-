@@ -1,8 +1,7 @@
 #include <iostream>
-#include <myconio_mac.h>
-#include <stdlib.h>
-#include <string.h>
 #include <fstream>
+#include <myconio_mac.h>
+#include <string>
 using namespace std;
 
 class Book
@@ -17,6 +16,7 @@ public:
         cout << "New BOOK" << endl;
         cout << "Enter book ID : ";
         cin >> book_id;
+        cin.ignore(); // Clear the buffer
         cout << "Enter Book Name : ";
         getline(cin, b_name);
         cout << "Enter Author Name: ";
@@ -38,6 +38,7 @@ public:
         cout << "Modify Author's Name : ";
         getline(cin, a_name);
     }
+
     int return_BookID()
     {
         return book_id;
@@ -45,7 +46,6 @@ public:
 
     void report()
     {
-        // video 6.
         cout << book_id << " | " << b_name << " | " << a_name << " | " << endl;
     }
 
@@ -69,9 +69,9 @@ public:
         cout << "New Student" << endl;
         cout << "Enter admin no : ";
         cin >> admin_no;
+        cin.ignore(); // Clear the buffer
         cout << "Enter  Name : ";
         getline(cin, Name);
-
         book_holding = 0;
         stdbno = 0;
         cout << "Profile Created." << endl;
@@ -127,7 +127,6 @@ public:
 
     void report()
     {
-        // video 7
         cout << admin_no << " | " << Name << " | " << book_holding << " | " << endl;
     }
 };
@@ -137,230 +136,23 @@ fstream fp, fp1;
 Book bk;
 Student st;
 
-void writeBook()
+#include <limits> // for std::numeric_limits
+
+void clearScreen()
 {
-    char ch = 'y';
-    fp.open("book.dat", ios::out | ios::app);
-    do
-    {
-        clrscr();
-        bk.create_book();
-        fp.write((char *)&bk, sizeof(Book));
-        cout << "\n Add more. (y/n)?" << endl;
-        cin >> ch;
-    } while (ch == 'y' || ch == 'Y');
-    fp.close();
-}
-
-void writeStudent()
-{
-    char ch = 'y';
-    fp.open("Student.dat", ios::out | ios::app);
-    do
-    {
-        clrscr();
-        st.create_std();
-        fp.write((char *)&st, sizeof(Student));
-        cout << "\n Add more. (y/n)?" << endl;
-        cin >> ch;
-    } while (ch == 'y' || ch != 'Y');
-    fp.close();
-}
-
-void displayspb(int bookID)
-{
-    cout << "\nBook Details :" << endl;
-    bool flag = 0;
-    fp.open("book.dat", ios::in);
-    while (fp.read((char *)&bk, sizeof(Book)))
-    {
-        if (bk.return_BookID() == bookID)
-        {
-
-            bk.showBook();
-            flag = 1;
-        }
-    }
-    fp.close();
-    if (!flag)
-    {
-        cout << "Book Doesn't Exist." << endl;
-    }
-}
-
-void displayspStd(int admin_no)
-{
-    cout << "Student Details :" << endl;
-    bool flag = 0;
-    fp.open("student.dat", ios::in);
-    while (fp.read((char *)&st, sizeof(Student)))
-    {
-        if (st.return_adminNo() == admin_no)
-        {
-
-            st.showStudent();
-            flag = 1;
-        }
-    }
-    fp.close();
-    if (!flag)
-    {
-        cout << "Student Doesn't Exist." << endl;
-    }
-}
-
-void modifyBook()
-{
-    int book_id;
-    bool found = false;
-    clrscr();
-    cout << "\nModify Book Record." << endl;
-    cout << "Enter the Book no. :";
-    cin >> book_id;
-    fp.open("book.dat", ios::in | ios::out);
-    while (fp.read((char *)&bk, sizeof(Book)))
-    {
-        if (book_id == bk.return_BookID())
-        {
-            bk.showBook();
-            cout << "Enter the New detials" << endl;
-            bk.modifyBook();
-            int pos = -1 * (int)sizeof(bk);
-            fp.seekp(pos, ios::cur);
-            fp.write((char *)&bk, sizeof(Book));
-            cout << "\nRecord Updated" << endl;
-            found = true;
-        }
-    }
-    fp.close();
-    if (!found)
-    {
-        cout << "No Book found" << endl;
-    }
-    getchar();
-}
-
-void modifyStudent()
-{
-    int admin_no;
-    bool found = false;
-    clrscr();
-    cout << "\nModify Student Record." << endl;
-    cout << "Enter the Admin no. :";
-    cin >> admin_no;
-    fp.open("Student.dat", ios::in | ios::out);
-    while (fp.read((char *)&st, sizeof(Student)))
-    {
-        if (admin_no == st.return_adminNo())
-        {
-            st.showStudent();
-            cout << "Enter the New detials" << endl;
-            st.modifyStudent();
-            int pos = -1 * (int)sizeof(st);
-            fp.seekp(pos, ios::cur);
-            fp.write((char *)&st, sizeof(Student));
-            cout << "\nRecord Updated" << endl;
-            found = true;
-        }
-    }
-    fp.close();
-    if (!found)
-    {
-        cout << "No Student found" << endl;
-    }
-    getchar();
-}
-
-void deleteStudent()
-{
-
-    int admin_no;
-    bool flag = false;
-    clrscr();
-    cout << "\n\tDelete Student." << endl;
-    cout << "Enter thr Admin no." << endl;
-    cin >> admin_no;
-    fp.open("Student.dat", ios::in | ios::out);
-    fstream fp2;
-    fp2.open("temp.dat", ios::out);
-    fp.seekg(0, ios::beg);
-    while (fp.read((char *)&st, sizeof(Student)))
-    {
-        if (admin_no != st.return_adminNo())
-        {
-            fp2.write((char *)&st, sizeof(Student));
-        }
-        else
-        {
-
-            flag = true;
-        }
-    }
-    fp2.close();
-    fp.close();
-    remove("student.dat");
-    rename("temp.dat", "student.dat");
-    if (flag)
-    {
-        cout << "Record deleted" << endl;
-    }
-    else
-    {
-        cout << "Record not found." << endl;
-    }
-
-    getchar();
-}
-
-void deleteBook()
-{
-
-    int Book_ID;
-    bool flag = false;
-    clrscr();
-    cout << "\n\tDelete BOOK." << endl;
-    cout << "Enter thr Book ID." << endl;
-    cin >> Book_ID;
-    fp.open("Book.dat", ios::in | ios::out);
-    fstream fp2;
-    fp2.open("temp.dat", ios::out);
-    fp.seekg(0, ios::beg);
-    while (fp.read((char *)&bk, sizeof(Book)))
-    {
-        if (Book_ID != bk.return_BookID())
-        {
-            fp2.write((char *)&bk, sizeof(Book));
-        }
-        else
-        {
-
-            flag = true;
-        }
-    }
-    fp2.close();
-    fp.close();
-    remove("book.dat");
-    rename("temp.dat", "book.dat");
-    if (flag)
-    {
-        cout << "Record deleted" << endl;
-    }
-    else
-    {
-        cout << "Record not found." << endl;
-    }
-
-    getchar();
+    cout << string(50, '\n'); // Print 50 newline characters to clear the console screen
 }
 
 void DispAllStd()
 {
-    clrscr();
+    clearScreen();
     fp.open("student.dat", ios::in);
     if (!fp)
     {
         cout << "File not Open" << endl;
-        getchar();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Clear the input buffer
+        cout << "Press Enter to continue...";
+        cin.get(); // Wait for Enter key press
         return;
     }
     cout << "\n\n\tStudent list" << endl;
@@ -373,17 +165,21 @@ void DispAllStd()
         st.report();
     }
     fp.close();
-    getchar();
+    cout << "Press Enter to continue...";
+    cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Clear the input buffer
+    cin.get();                                           // Wait for Enter key press
 }
 
 void DispAllBook()
 {
-    clrscr();
+    clearScreen();
     fp.open("book.dat", ios::in);
     if (!fp)
     {
         cout << "File not Open" << endl;
-        getchar();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Clear the input buffer
+        cout << "Press Enter to continue...";
+        cin.get(); // Wait for Enter key press
         return;
     }
     cout << "\n\nBooks list" << endl;
@@ -391,12 +187,451 @@ void DispAllBook()
     cout << "Book ID | "
          << " Name | "
          << " | Author | " << endl;
-    while (fp.read((char *)&bk, sizeof(Book)))
+    while (fp.read(reinterpret_cast<char *>(&bk), sizeof(Book)))
     {
         bk.report();
     }
     fp.close();
+    cout << "Press Enter to continue...";
+    cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Clear the input buffer
+    cin.get();                                           // Wait for Enter key press
+}
+
+bool isBookIDUnique(int bookID)
+{
+    fp.open("book.dat", ios::in | ios::binary);
+    if (!fp)
+    {
+        cout << "Error opening book file for reading." << endl;
+        return false; // Assume non-unique in case of error
+    }
+
+    Book tempBook;
+    while (fp.read(reinterpret_cast<char *>(&tempBook), sizeof(Book)))
+    {
+        if (tempBook.return_BookID() == bookID)
+        {
+            fp.close();
+            return false; // Book ID already exists
+        }
+    }
+
+    fp.close();
+    return true; // Book ID is unique
+}
+
+void writeBook()
+{
+    char ch = 'y';
+
+    fp.open("book.dat", ios::out | ios::app | ios::binary);
+    if (!fp)
+    {
+        cout << "Error opening book file for writing." << endl;
+        return;
+    }
+
+    do
+    {
+        clrscr();
+        bk.create_book();
+
+        // Check if the book ID is unique before writing
+        if (isBookIDUnique(bk.return_BookID()))
+        {
+            fp.write(reinterpret_cast<char *>(&bk), sizeof(Book));
+            cout << "\n Add more? (y/n): ";
+            cin >> ch;
+        }
+        else
+        {
+            cout << "Book ID already exists. Please choose a unique ID." << endl;
+        }
+
+        // Clear the input buffer
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+    } while (ch == 'y' || ch == 'Y');
+
+    fp.close();
+}
+
+
+void deleteStudent()
+{
+    int admin_no;
+    bool found = false;
+
+    clrscr();
+    cout << "\n\tDelete Student." << endl;
+    cout << "Enter the Admin no.: ";
+
+    // Check for valid input
+    while (!(cin >> admin_no) || admin_no < 0)
+    {
+        cout << "Invalid input. Please enter a non-negative integer: ";
+        cin.clear();                                         // Clear the error flag
+        cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discard invalid input
+    }
+
+    fp.open("Student.dat", ios::in | ios::out | ios::binary);
+    if (!fp)
+    {
+        cout << "Error opening student file for reading and writing." << endl;
+        return;
+    }
+
+    fstream fp2("temp.dat", ios::out | ios::binary);
+    if (!fp2)
+    {
+        cout << "Error creating temporary file." << endl;
+        fp.close();
+        return;
+    }
+
+    while (fp.read(reinterpret_cast<char *>(&st), sizeof(Student)))
+    {
+        if (admin_no != st.return_adminNo())
+        {
+            fp2.write(reinterpret_cast<char *>(&st), sizeof(Student));
+        }
+        else
+        {
+            found = true;
+        }
+    }
+
+    fp2.close();
+    fp.close();
+
+    if (remove("student.dat") != 0)
+    {
+        cout << "Error deleting original file." << endl;
+        return;
+    }
+
+    if (rename("temp.dat", "student.dat") != 0)
+    {
+        cout << "Error renaming temporary file." << endl;
+        return;
+    }
+
+    if (found)
+    {
+        cout << "Record deleted" << endl;
+    }
+    else
+    {
+        cout << "Record not found." << endl;
+    }
+
     getchar();
+}
+
+bool isAdminNoUnique(int adminNo) {
+    fstream fp("student.dat", ios::in | ios::binary);
+
+    if (!fp) {
+        cout << "Error opening student file for reading." << endl;
+        return false;
+    }
+
+    Student tempStudent;
+    bool unique = true;
+
+    while (fp.read(reinterpret_cast<char*>(&tempStudent), sizeof(Student))) {
+        if (tempStudent.return_adminNo() == adminNo) {
+            unique = false;
+            break;
+        }
+    }
+
+    fp.close();
+    return unique;
+}
+void writeStudent()
+{
+    char ch;
+    fp.open("student.dat", ios::app | ios::out | ios::binary);
+
+    if (!fp)
+    {
+        cout << "Error opening student file for writing." << endl;
+        return;
+    }
+
+    do
+    {
+        clrscr();
+        st.create_std();
+
+        // Check if the student admin number is unique before writing
+        if (isAdminNoUnique(st.return_adminNo()))
+        {
+            fp.write(reinterpret_cast<char *>(&st), sizeof(Student));
+            cout << "\n Add more? (y/n): ";
+            ch = getch();
+        }
+        else
+        {
+            cout << "Admin number already exists. Please choose a unique number." << endl;
+        }
+
+        // Clear the input buffer
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+    } while (ch == 'y' || ch == 'Y');
+
+    fp.close();
+}
+
+void displayspb(int bookID)
+{
+    clearScreen();
+    fp.open("book.dat", ios::in);
+    if (!fp)
+    {
+        cout << "File not Open" << endl;
+        cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Clear the input buffer
+        cout << "Press Enter to continue...";
+        cin.get(); // Wait for Enter key press
+        return;
+    }
+    bool found = false;
+    cout << "\n\nBooks Details : " << endl;
+    cout << "=======" << endl;
+    while (fp.read(reinterpret_cast<char *>(&bk), sizeof(Book)))
+    {
+        if (bk.return_BookID() == bookID)
+        {
+            bk.showBook();
+            found = true;
+            break;
+        }
+    }
+    if (!found)
+    {
+        cout << "Book with ID " << bookID << " doesn't exist." << endl;
+    }
+    fp.close();
+    cout << "Press Enter to continue...";
+    cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Clear the input buffer
+    cin.get();
+}
+
+void displayspStd(int admin_no)
+{
+    clearScreen();
+    fp.open("student.dat", ios::in);
+    if (!fp)
+    {
+        cout << "File not Open" << endl;
+        cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Clear the input buffer
+        cout << "Press Enter to continue...";
+        cin.get(); // Wait for Enter key press
+        return;
+    }
+    bool found = false;
+    cout << "Student Details : " << endl;
+    cout << "=======" << endl;
+    while (fp.read(reinterpret_cast<char *>(&st), sizeof(Student)))
+    {
+        if (st.return_adminNo() == admin_no)
+        {
+            st.showStudent();
+            found = true;
+            break;
+        }
+    }
+    if (!found)
+    {
+        cout << "Student with admin no " << admin_no << " doesn't exist." << endl;
+    }
+    fp.close();
+    cout << "Press Enter to continue...";
+    cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Clear the input buffer
+    cin.get();
+}
+
+void deleteBook()
+{
+    int Book_ID;
+    bool found = false;
+
+    clrscr();
+    cout << "\n\tDelete BOOK." << endl;
+    cout << "Enter the Book ID: ";
+
+    // Check for valid input
+    while (!(cin >> Book_ID) || Book_ID < 0)
+    {
+        cout << "Invalid input. Please enter a non-negative integer: ";
+        cin.clear();                                         // Clear the error flag
+        cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discard invalid input
+    }
+
+    fp.open("book.dat", ios::in | ios::out | ios::binary);
+    if (!fp)
+    {
+        cout << "Error opening book file for reading and writing." << endl;
+        return;
+    }
+
+    fstream fp2("temp.dat", ios::out | ios::binary);
+    if (!fp2)
+    {
+        cout << "Error creating temporary file." << endl;
+        fp.close();
+        return;
+    }
+
+    while (fp.read(reinterpret_cast<char *>(&bk), sizeof(Book)))
+    {
+        if (Book_ID != bk.return_BookID())
+        {
+            fp2.write(reinterpret_cast<char *>(&bk), sizeof(Book));
+        }
+        else
+        {
+            found = true;
+        }
+    }
+
+    fp2.close();
+    fp.close();
+
+    if (remove("book.dat") != 0)
+    {
+        cout << "Error deleting original file." << endl;
+        return;
+    }
+
+    if (rename("temp.dat", "book.dat") != 0)
+    {
+        cout << "Error renaming temporary file." << endl;
+        return;
+    }
+
+    if (found)
+    {
+        cout << "Record deleted" << endl;
+    }
+    else
+    {
+        cout << "Record not found." << endl;
+    }
+
+    getchar();
+}
+
+void modifyStudent()
+{
+    int admin_no;
+    bool found = false;
+
+    clrscr();
+    cout << "\nModify Student Record." << endl;
+    cout << "Enter the admission no. : ";
+
+    while (!(cin >> admin_no) || admin_no < 0)
+    {
+        cout << "Invalid input. Please enter a non-negative integer: ";
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    }
+
+    fp.open("Student.dat", ios::in | ios::out | ios::binary);
+    if (!fp)
+    {
+        cout << "Error opening Student file for reading and writing." << endl;
+        return;
+    }
+
+    while (fp.read(reinterpret_cast<char *>(&st), sizeof(Student)))
+    {
+        if (admin_no == st.return_adminNo())
+        {
+            st.showStudent();
+            cout << "Enter the new details" << endl;
+            st.modifyStudent();
+            int pos = -1 * static_cast<int>(sizeof(st));
+            fp.seekp(pos, ios::cur);
+            fp.write(reinterpret_cast<char *>(&st), sizeof(Student));
+            cout << "\nRecord Updated" << endl;
+            found = true;
+            break;
+        }
+    }
+
+    fp.close();
+
+    if (!found)
+    {
+        cout << "No Student found" << endl;
+    }
+
+    getchar();
+}
+
+void modifyBook()
+{
+    int book_id;
+    bool found = false;
+
+    clrscr();
+    cout << "\nModify Book Record." << endl;
+    cout << "Enter the Book ID: ";
+
+    while (!(cin >> book_id) || book_id < 0)
+    {
+        cout << "Invalid input. Please enter a non-negative integer: ";
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    }
+
+    fp.open("book.dat", ios::in | ios::out | ios::binary);
+    if (!fp)
+    {
+        cout << "Error opening book file for reading and writing." << endl;
+        return;
+    }
+
+    while (fp.read(reinterpret_cast<char *>(&bk), sizeof(Book)))
+    {
+        if (book_id == bk.return_BookID())
+        {
+            bk.showBook();
+            cout << "Enter the new details" << endl;
+            bk.modifyBook();
+            int pos = -1 * static_cast<int>(sizeof(bk));
+            fp.seekp(pos, ios::cur);
+            fp.write(reinterpret_cast<char *>(&bk), sizeof(Book));
+            cout << "\nRecord Updated" << endl;
+            found = true;
+            break; // Exit the loop after modifying the first matching record
+        }
+    }
+
+    fp.close();
+
+    if (!found)
+    {
+        cout << "No Book found" << endl;
+    }
+
+    getchar();
+}
+
+void start()
+{
+    clrscr();
+    gotoxy(35, 11);
+    cout << "LIB";
+    gotoxy(35, 14);
+    cout << "MAG";
+    gotoxy(35, 17);
+    cout << "SYS";
+    getch();
 }
 
 void bookissue()
@@ -412,7 +647,7 @@ void bookissue()
     cout << "Enter Student admin no.:";
     cin >> student_adminNo;
     fp.open("student.dat", ios::in | ios ::out);
-    fp1.open("book.dat", ios::in | ios ::out);
+    fp1.open("book.dat", ios::in | ios ::out | ios::binary);
     while (fp.read((char *)&st, sizeof(Student)) && !found)
     {
         if (st.return_adminNo() == student_adminNo)
@@ -458,7 +693,6 @@ void bookissue()
 
 void bookDeposit()
 {
-
     int student_adminNo;
     int BookID;
 
@@ -467,33 +701,63 @@ void bookDeposit()
     clrscr();
     cout << "\tBook Deposit :- " << endl;
     cout << "Enter Student admin no.:";
-    cin >> student_adminNo;
-    fp.open("student.dat", ios::in | ios ::out);
-    fp1.open("book.dat", ios::in | ios ::out);
-    while (fp.read((char *)&st, sizeof(Student)) && !found)
+
+    // Check for valid input
+    while (!(cin >> student_adminNo) || student_adminNo < 0)
+    {
+        cout << "Invalid input. Please enter a non-negative integer: ";
+        cin.clear();                                         // Clear the error flag
+        cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discard invalid input
+    }
+
+    fp.open("student.dat", ios::in | ios ::out | ios::binary);
+    if (!fp)
+    {
+        cout << "Error opening student file for reading and writing." << endl;
+        return;
+    }
+
+    fp1.open("book.dat", ios::in | ios ::out | ios::binary);
+    if (!fp1)
+    {
+        cout << "Error opening book file for reading and writing." << endl;
+        fp.close();
+        return;
+    }
+
+    while (fp.read(reinterpret_cast<char *>(&st), sizeof(Student)) && !found)
     {
         if (st.return_adminNo() == student_adminNo)
         {
             found = true;
             if (st.return_book_holding() == 1)
             {
-                cout << "Enter the Book ID: " << endl;
-                cin >> BookID;
-                while (fp1.read((char *)&bk, sizeof(Book)) && !flag)
+                cout << "Enter the Book ID: ";
+
+                // Check for valid input
+                while (!(cin >> BookID) || BookID < 0)
+                {
+                    cout << "Invalid input. Please enter a non-negative integer: ";
+                    cin.clear();                                         // Clear the error flag
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Discard invalid input
+                }
+
+                while (fp1.read(reinterpret_cast<char *>(&bk), sizeof(Book)) && !flag)
                 {
                     if (bk.return_BookID() == st.return_studentBookno())
                     {
                         flag = true;
                         bk.showBook();
-
                         st.reset_book_holding();
-                        int pos = -1 * (int)sizeof(st);
+                        int pos = -1 * static_cast<int>(sizeof(st));
                         fp.seekg(pos, ios::cur);
-                        fp.write((char *)&st, sizeof(Student));
+                        fp.write(reinterpret_cast<char *>(&st), sizeof(Student));
                         cout << "Book Deposited." << endl;
+                        break; // Exit the loop after depositing the book
                     }
                 }
-                if (flag == 0)
+
+                if (!flag)
                 {
                     cout << "Book doesn't Exist." << endl;
                 }
@@ -504,25 +768,15 @@ void bookDeposit()
             }
         }
     }
-    if (found == 0)
+
+    if (!found)
     {
         cout << "No Student Found" << endl;
     }
+
     getchar();
     fp.close();
     fp1.close();
-}
-
-void start()
-{
-    clrscr();
-    gotoxy(35, 11);
-    cout << "LIB";
-    gotoxy(35, 14);
-    cout << "MAG";
-    gotoxy(35, 17);
-    cout << "SYS";
-    getch();
 }
 
 int main();
@@ -552,41 +806,51 @@ void adminMenu()
     {
     case 1:
         // writeStudent();
+        writeStudent();
         break;
     case 2:
         // displayALLStudent() ;
+        DispAllStd();
         break;
     case 3:
         clrscr();
         cout << "Enter Admissoin no of student : ";
         cin >> stdID;
         // display1Student();
+        displayspStd(stdID);
         break;
     case 4:
         clrscr();
         // modifystudent();
+        modifyStudent();
         break;
     case 5:
         // deleteStudent();
+        deleteStudent();
         break;
     case 6:
         // writeBook();
+        writeBook();
         break;
     case 7:
         // displayALLBooks() ;
+        DispAllBook();
         break;
     case 8:
         clrscr();
         cout << "Enter Book Id : ";
         cin >> BookID;
         // display1Book();
+        displayspb(BookID);
         break;
     case 9:
         clrscr();
         // modifyBook();
+        modifyBook();
         break;
     case 10:
         // deleteBook();
+        deleteBook();
         break;
     case 11:
         main();
@@ -614,25 +878,20 @@ int main()
         switch (ch)
         {
         case '1':
-            // bookissue();
+            bookissue();
             break;
-
         case '2':
-            // bookdeposit();
+            bookDeposit();
             break;
-
         case '3':
             adminMenu();
             break;
-
         case '4':
             exit(0);
             break;
-
         default:
             break;
         }
-
     } while (ch != '4');
     return 0;
 }
