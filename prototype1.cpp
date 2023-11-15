@@ -3,7 +3,6 @@
 #include <myconio_mac.h>
 #include <string>
 #include <iomanip>
-#include <limits>
 
 using namespace std;
 
@@ -49,7 +48,7 @@ public:
 
     void report()
     {
-        cout<<book_id<<setw(20)<<"|"<<setw(20)<<b_name<<setw(20)<<"|"<<setw(20)<<a_name<<setw(20)<<"|"<<endl;
+        cout<<book_id<<setw(20)<<"|"<<setw(20)<<setw(20)<<b_name<<setw(20)<<"|"<<setw(20)<<a_name<<setw(20)<<"|"<<endl;
     }
 
     string return_B_Name()
@@ -130,7 +129,7 @@ public:
 
     void report()
     {
-        cout<<admin_no<<setw(20)<<"|"<<setw(20)<<Name<<setw(20)<<"|"<<setw(20)<<book_holding<<setw(20)<<"|"<<endl;
+        cout << admin_no << " | " << Name << " | " << book_holding << " | " << endl;
     }
 };
 
@@ -139,7 +138,7 @@ fstream fp, fp1;
 Book bk;
 Student st;
 
-
+#include <limits>
 
 void clearScreen()
 {
@@ -185,7 +184,9 @@ void DispAllBook()
     }
     cout << "\n\nBooks list" << endl;
     cout << "=======" << endl;
-    cout<<"Book ID"<<setw(20)<<"|"<<setw(20)<<"Name"<<setw(20)<<"|"<<setw(20)<<"Author Name"<<setw(20)<<"|"<<endl;
+    cout << "Book ID | "
+         << " Name | "
+         << " | Author | " << endl;
     while (fp.read(reinterpret_cast<char *>(&bk), sizeof(Book)))
     {
         bk.report();
@@ -736,20 +737,18 @@ void bookDeposit()
                         int pos = -1 * static_cast<int>(sizeof(st));
                         fp.seekg(pos, ios::cur);
                         fp.write(reinterpret_cast<char *>(&st), sizeof(Student));
-                        cout.flush();
+
                         cout << "Book Deposited." << endl;
                     }
                 }
 
                 if (!foundBook)
                 {
-                    cout.flush();
                     cout << "Book doesn't Exist." << endl;
                 }
             }
             else
             {
-                cout.flush();
                 cout << "No book Issued." << endl;
             }
         }
